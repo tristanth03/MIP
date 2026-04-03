@@ -2,5 +2,9 @@
   {
     "file": "api/Iceland/CPI.md",
     "title": "CPI"
+  },
+  {
+    "file": "api/Iceland/Example.md",
+    "title": "Example"
   }
 ]

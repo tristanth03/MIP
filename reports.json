@@ -1,0 +1,20 @@
+[
+  {
+    "file": "sample_0_10.html",
+    "title": "Chaos Theory and the Logistic Map",
+    "category": "Mathematics Report",
+    "date": "2026-04-03T20:39"
+  },
+  {
+    "file": "rlc.html",
+    "title": "RLC Circuit Step Response Explorer",
+    "category": "Electrical Engineering Report",
+    "date": ""
+  },
+  {
+    "file": "fourier.html",
+    "title": "Fourier Series Approximation of Common Waveforms",
+    "category": "Signal Processing Report",
+    "date": ""
+  }
+]

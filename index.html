@@ -144,6 +144,48 @@ body{
 }
 .item-meta .cat{ color:var(--acc); }
 
+/* ── Report category groups ── */
+.report-group{ margin-bottom:.1rem; }
+.report-group-hdr{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.38rem 1.4rem .38rem 1.1rem;
+  cursor:pointer; user-select:none;
+  border-left:2px solid transparent;
+  transition:background .12s;
+}
+.report-group-hdr:hover{ background:var(--hover-row); }
+.report-group-hdr .grp-name{
+  font-family:'JetBrains Mono',monospace; font-size:.55rem;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--silver);
+}
+.report-group-hdr .grp-right{
+  display:flex; align-items:center; gap:.5rem;
+}
+.report-group-hdr .grp-count{
+  font-family:'JetBrains Mono',monospace; font-size:.48rem;
+  color:var(--acc); background:var(--tag-bg);
+  border:1px solid var(--tag-border); border-radius:9px;
+  padding:0 5px;
+}
+.report-group-hdr .grp-arrow{
+  font-size:.55rem; color:var(--silver);
+  transition:transform .15s; display:inline-block;
+}
+.report-group.collapsed .grp-arrow{ transform:rotate(-90deg); }
+.report-group.collapsed .report-group-body{ display:none; }
+.report-group-body .report-item{ padding-left:1.8rem; }
+
+/* recent pill */
+.recent-btn{
+  font-family:'JetBrains Mono',monospace; font-size:.57rem;
+  background:var(--tag-bg); color:var(--tag-color);
+  border:1px solid var(--tag-border); border-radius:3px;
+  padding:2px 8px; cursor:pointer; outline:none;
+  transition:background .12s;
+}
+.recent-btn:hover{ background:var(--hover-row); }
+.recent-btn.active{ background:var(--acc); color:#fff; border-color:var(--acc); }
+
 /* folder groups in data list */
 .data-group-header{
   padding:.45rem 1.4rem .2rem;
@@ -302,10 +344,8 @@ body{
     <div class="controls" id="reportControls">
       <input type="text" class="search-box" id="searchBox" placeholder="Search reports…" autocomplete="off">
       <div class="filter-row">
-        <select class="cat-select" id="catSelect">
-          <option value="">All categories</option>
-        </select>
-        <button class="sort-btn" id="sortBtn">Date ↓</button>
+        <button class="recent-btn" id="recentBtn">Recent</button>
+        <button class="sort-btn"   id="sortBtn">Date ↓</button>
         <span class="result-count" id="resultCount"></span>
       </div>
     </div>
@@ -348,8 +388,8 @@ body{
   let activeFile = null;
 
   const searchBox      = document.getElementById('searchBox');
-  const catSelect      = document.getElementById('catSelect');
   const sortBtn        = document.getElementById('sortBtn');
+  const recentBtn      = document.getElementById('recentBtn');
   const reportList     = document.getElementById('reportList');
   const dataList       = document.getElementById('dataList');
   const reportControls = document.getElementById('reportControls');
@@ -361,6 +401,8 @@ body{
   const mdViewer       = document.getElementById('mdViewer');
   const btnNewTab      = document.getElementById('btnNewTab');
   const btnDownload    = document.getElementById('btnDownload');
+  let recentMode = false;
+  let collapsedGroups = new Set();
 
   /* ── Theme ── */
   window.toggleTheme = function(){
@@ -406,50 +448,89 @@ body{
       dataList.innerHTML = '<div class="empty-state">No data files found.<br>Commit .md files to data/</div>';
     });
 
-  /* ── Category filter ── */
-  function buildCatFilter(){
-    const cats = [...new Set(reports.map(r=>r.category).filter(Boolean))].sort();
-    cats.forEach(c=>{
-      const o = document.createElement('option');
-      o.value = c; o.textContent = c;
-      catSelect.appendChild(o);
+  /* ── Sort helper ── */
+  function sortedReports(list){
+    return list.slice().sort((a,b)=>{
+      const da=a.date||'', db=b.date||'';
+      if(da<db) return sortDesc?1:-1;
+      if(da>db) return sortDesc?-1:1;
+      return (a.title||'').localeCompare(b.title||'');
     });
   }
 
-  function getFiltered(){
-    const q = searchBox.value.trim().toLowerCase();
-    const cat = catSelect.value;
-    return reports
-      .filter(r=>(!cat || r.category===cat) && (!q || r.title.toLowerCase().includes(q)))
-      .sort((a,b)=>{
-        const da=a.date||'', db=b.date||'';
-        if(da<db) return sortDesc?1:-1;
-        if(da>db) return sortDesc?-1:1;
-        return a.title.localeCompare(b.title);
-      });
-  }
-
-  /* ── Render reports ── */
+  /* ── Render reports: grouped by category, or flat for search/recent ── */
   function renderReports(){
-    const list = getFiltered();
-    resultCount.textContent = list.length + (list.length===1?' report':' reports');
-    if(!list.length){
-      reportList.innerHTML='<div class="empty-state">No matching reports.</div>';
+    const q = searchBox.value.trim().toLowerCase();
+    reportList.innerHTML='';
+
+    // Recent mode: flat list of 20 newest
+    if(recentMode){
+      const list = sortedReports(reports.filter(r=>r.title&&r.title!=='Title missing')).slice(0,20);
+      resultCount.textContent='Recent '+list.length;
+      if(!list.length){ reportList.innerHTML='<div class="empty-state">No reports.</div>'; return; }
+      list.forEach(r=>reportList.appendChild(makeReportItem(r,true)));
       return;
     }
-    reportList.innerHTML='';
-    list.forEach(r=>{
-      const el=document.createElement('div');
-      el.className='report-item'+(r.file===activeFile?' active':'');
-      el.innerHTML=
-        '<span class="item-title">'+esc(r.title)+'</span>'+
-        '<div class="item-meta">'+
-          (r.category?'<span class="cat">'+esc(r.category)+'</span>':'')+
-          (r.date?'<span>'+fmtDate(r.date)+'</span>':'')+
-        '</div>';
-      el.addEventListener('click',()=>openReport(r));
-      reportList.appendChild(el);
+
+    // Search mode: flat filtered
+    if(q){
+      const list = sortedReports(reports.filter(r=>
+        (r.title||'').toLowerCase().includes(q) ||
+        (r.category||'').toLowerCase().includes(q)
+      ));
+      resultCount.textContent=list.length+(list.length===1?' result':' results');
+      if(!list.length){ reportList.innerHTML='<div class="empty-state">No matches.</div>'; return; }
+      list.forEach(r=>reportList.appendChild(makeReportItem(r,true)));
+      return;
+    }
+
+    // Default: grouped by category
+    const grouped={};
+    sortedReports(reports).forEach(r=>{
+      const cat = (r.category&&r.category!=='Category missing Report') ? r.category : 'Uncategorised';
+      const title = r.title&&r.title!=='Title missing' ? r.title : null;
+      if(!title) return; // skip untitled
+      (grouped[cat]=grouped[cat]||[]).push(r);
     });
+    const cats = Object.keys(grouped).sort();
+    resultCount.textContent=reports.filter(r=>r.title&&r.title!=='Title missing').length+' reports';
+    cats.forEach(cat=>{
+      const items=grouped[cat];
+      const grp=document.createElement('div');
+      grp.className='report-group'+(collapsedGroups.has(cat)?' collapsed':'');
+      const hdr=document.createElement('div');
+      hdr.className='report-group-hdr';
+      hdr.innerHTML=
+        '<span class="grp-name">'+esc(cat)+'</span>'+
+        '<span class="grp-right">'+
+          '<span class="grp-count">'+items.length+'</span>'+
+          '<span class="grp-arrow">▾</span>'+
+        '</span>';
+      hdr.addEventListener('click',()=>{
+        grp.classList.toggle('collapsed');
+        if(grp.classList.contains('collapsed')) collapsedGroups.add(cat);
+        else collapsedGroups.delete(cat);
+      });
+      const body=document.createElement('div');
+      body.className='report-group-body';
+      items.forEach(r=>body.appendChild(makeReportItem(r,false)));
+      grp.appendChild(hdr);
+      grp.appendChild(body);
+      reportList.appendChild(grp);
+    });
+  }
+
+  function makeReportItem(r, showCat){
+    const el=document.createElement('div');
+    el.className='report-item'+(r.file===activeFile?' active':'');
+    el.innerHTML=
+      '<span class="item-title">'+esc(r.title)+'</span>'+
+      '<div class="item-meta">'+
+        (showCat&&r.category?'<span class="cat">'+esc(r.category)+'</span>':'')+
+        (r.date?'<span>'+fmtDate(r.date)+'</span>':'')+
+      '</div>';
+    el.addEventListener('click',()=>openReport(r));
+    return el;
   }
 
   /* ── Render data list (grouped by folder) ── */
@@ -534,8 +615,14 @@ body{
     sortBtn.classList.toggle('asc',!sortDesc);
     renderReports();
   });
-  searchBox.addEventListener('input',renderReports);
-  catSelect.addEventListener('change',renderReports);
+  /* ── Recent ── */
+  recentBtn.addEventListener('click',()=>{
+    recentMode=!recentMode;
+    recentBtn.classList.toggle('active',recentMode);
+    searchBox.value='';
+    renderReports();
+  });
+  searchBox.addEventListener('input',()=>{ if(recentMode){ recentMode=false; recentBtn.classList.remove('active'); } renderReports(); });
 
   /* ── Resizable panel ── */
   const panel=document.getElementById('sidePanel');

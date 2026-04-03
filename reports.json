@@ -48,12 +48,6 @@
     "date": "2026-04-03T20:40"
   },
   {
-    "file": "SIR.html",
-    "title": "SIR Epidemic Model: Infection Dynamics Explorer",
-    "category": "Epidemiology Report",
-    "date": "2026-04-03T20:40"
-  },
-  {
     "file": "rlc.html",
     "title": "RLC Circuit Step Response Explorer",
     "category": "Electrical Engineering Report",
@@ -70,5 +64,53 @@
     "title": "Predator–Prey Dynamics: The Lotka–Volterra System",
     "category": "Biology Report",
     "date": "2026-04-03T20:40"
+  },
+  {
+    "file": "sample_0_3.html",
+    "title": "Nash Equilibria and Strategic Interaction",
+    "category": "Economics Report",
+    "date": "2026-04-03T20:40"
+  },
+  {
+    "file": "fourier.html",
+    "title": "Fourier Series Approximation of Common Waveforms",
+    "category": "Signal Processing Report",
+    "date": "2026-04-03T20:40"
+  },
+  {
+    "file": "ex3_QRM_rep.html",
+    "title": "Exercise Sheet 3",
+    "category": "Uni--QRM Report",
+    "date": "2026-04-03T20:40"
+  },
+  {
+    "file": "compoun_intr.html",
+    "title": "Compound Interest &amp; Savings Growth Explorer",
+    "category": "Finance Report",
+    "date": "2026-04-03T20:40"
+  },
+  {
+    "file": "sample_0_10.html",
+    "title": "Chaos Theory and the Logistic Map",
+    "category": "Mathematics Report",
+    "date": "2026-04-03T20:40"
+  },
+  {
+    "file": "sample_0_2.html",
+    "title": "Black Holes and the Schwarzschild Metric",
+    "category": "Physics Report",
+    "date": "2026-04-03T20:40"
+  },
+  {
+    "file": "sinus.html",
+    "title": "Sin Experiment",
+    "category": "Research Report",
+    "date": "2026-04-03T18:38"
+  },
+  {
+    "file": "ex3.html",
+    "title": "Title missing",
+    "category": "Category missing Report",
+    "date": ""
   }
 ]

@@ -1,6 +1,15 @@
+---
+title: Consumer Price Index — Iceland
+country: Iceland
+sector: Economics
+source: Hagstofa / Statistics Iceland
+type: CPI
+tags: [inflation, price index, annual change]
+---
+
 # Consumer Price Index — Iceland
 
-Annual change in the Icelandic Consumer Price Index (CPI), sourced from Statistics Iceland (Hagstofa).
+Annual percentage change in the Icelandic Consumer Price Index (CPI), sourced from Statistics Iceland (Hagstofa Íslands).
 
 ## Source
 

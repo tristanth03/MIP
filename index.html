@@ -7,221 +7,279 @@
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
-/* ── Theme variables: identical to reports ── */
 :root.navy {
-  --bg:#f2f4f6; --surface:#f2f4f6; --border:#D8E4EC;
+  --bg:#f2f4f6; --border:#D8E4EC;
   --text:#060F22; --sub:#3a5060; --acc:#0E6090; --silver:#A8B8C8;
-  --grid:rgba(6,15,34,0.07); --code-bg:#0a0f1a; --code-border:#1e2d42;
+  --code-bg:#0a0f1a; --code-border:#1e2d42;
   --tag-bg:rgba(14,96,144,0.1); --tag-border:#0E6090; --tag-color:#0E6090;
-  --mblock-bg:#f2f4f6; --sidebar-bg:#f2f4f6; --sidebar-border:#D8E4EC;
-  --font-body:Georgia, serif;
+  --sidebar-bg:#eaecf0; --sidebar-border:#D8E4EC;
+  --font-body:Georgia,serif;
   --hover-row:rgba(14,96,144,0.06);
+  --divider:#c8d8e4;
 }
 :root.gunmetal {
-  --bg:#030A14; --surface:#030A14; --border:#708898;
-  --text:#C0D0DC; --sub:#7090a8; --acc:#38B8E0; --silver:#C0D0DC;
-  --grid:rgba(192,208,220,0.09); --code-bg:#040810; --code-border:#708898;
+  --bg:#030A14; --border:#708898;
+  --text:#C0D0DC; --sub:#7090a8; --acc:#38B8E0; --silver:#506878;
+  --code-bg:#040810; --code-border:#708898;
   --tag-bg:rgba(56,184,224,0.08); --tag-border:#38B8E0; --tag-color:#38B8E0;
-  --mblock-bg:#0A1C30; --sidebar-bg:#030A14; --sidebar-border:#708898;
-  --font-body:Georgia, serif;
-  --hover-row:rgba(56,184,224,0.06);
+  --sidebar-bg:#040d18; --sidebar-border:#1a2e3e;
+  --font-body:Georgia,serif;
+  --hover-row:rgba(56,184,224,0.05);
+  --divider:#1a2e3e;
 }
 
-/* ── Reset & base ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{font-size:16px; height:100%;}
+html,body{height:100%; overflow:hidden;}
 body{
   background:var(--bg); color:var(--text);
   font-family:var(--font-body),'EB Garamond',Georgia,serif;
   line-height:1.78; -webkit-font-smoothing:antialiased;
   transition:background .25s,color .25s;
-  height:100%; overflow:hidden;
 }
 
-/* ── Layout: side panel + viewer ── */
-.hub-shell{display:flex; height:100vh; max-width:100%; margin:0 auto;}
+/* ── Shell ── */
+.hub-shell{display:flex; height:100vh;}
 
 /* ── Side panel ── */
 .side-panel{
-  width:380px; min-width:300px; max-width:420px; flex-shrink:0;
+  width:340px; min-width:240px; max-width:480px; flex-shrink:0;
   background:var(--sidebar-bg); border-right:1px solid var(--sidebar-border);
   display:flex; flex-direction:column; height:100vh;
-  transition:background .25s,border-color .25s;
+  transition:background .25s, border-color .25s;
+  position:relative;
 }
+
+/* ── Header ── */
 .side-header{
-  padding:1.2rem 1.3rem .8rem;
-  border-bottom:1px solid var(--sidebar-border);
+  padding:1.4rem 1.4rem 1rem;
+  border-bottom:1px solid var(--divider);
+  flex-shrink:0;
 }
-.side-title{
-  font-size:1.15rem; font-weight:500; color:var(--text);
-  font-family:var(--font-body);
-  margin-bottom:.6rem; line-height:1.2;
-}
-.side-title span{
+.brand-label{
   font-family:'JetBrains Mono',monospace;
-  font-size:.55rem; letter-spacing:.15em;
-  text-transform:uppercase; color:var(--acc);
-  display:block; margin-bottom:.35rem;
+  font-size:.5rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--acc); margin-bottom:.4rem;
+}
+.brand-title{
+  font-size:1.2rem; font-weight:500; color:var(--text);
+  font-family:var(--font-body); line-height:1.2;
 }
 
 /* ── Tab nav ── */
 .tab-nav{
-  display:flex; border-bottom:1px solid var(--sidebar-border);
+  display:flex; flex-shrink:0;
+  padding:.6rem .9rem .0rem;
+  gap:.25rem;
+  border-bottom:1px solid var(--divider);
 }
 .tab-btn{
-  flex:1; padding:.5rem 0;
-  font-family:'JetBrains Mono',monospace; font-size:.62rem;
+  padding:.3rem .9rem;
+  font-family:'JetBrains Mono',monospace; font-size:.58rem;
   letter-spacing:.1em; text-transform:uppercase;
   background:none; border:none; cursor:pointer;
   color:var(--silver); border-bottom:2px solid transparent;
   transition:color .15s, border-color .15s;
-  margin-bottom:-1px;
+  margin-bottom:-1px; white-space:nowrap;
 }
-.tab-btn:hover{color:var(--acc);}
+.tab-btn:hover{color:var(--text);}
 .tab-btn.active{color:var(--acc); border-bottom-color:var(--acc);}
 
-/* ── Controls ── */
-.controls{padding:.7rem 1.3rem; border-bottom:1px solid var(--sidebar-border);}
+/* ── Search & filters (reports only) ── */
+.controls{
+  padding:.75rem 1.1rem;
+  border-bottom:1px solid var(--divider);
+  flex-shrink:0;
+}
 .search-box{
-  width:100%; padding:.4rem .7rem;
-  font-family:'JetBrains Mono',monospace; font-size:.7rem;
-  background:var(--tag-bg); color:var(--text);
+  width:100%; padding:.38rem .65rem;
+  font-family:'JetBrains Mono',monospace; font-size:.68rem;
+  background:var(--bg); color:var(--text);
   border:1px solid var(--border); border-radius:4px;
   outline:none; transition:border-color .15s;
 }
 .search-box:focus{border-color:var(--acc);}
-.filter-row{display:flex; align-items:center; gap:.5rem; margin-top:.5rem; flex-wrap:wrap;}
-.cat-select, .sort-btn{
-  font-family:'JetBrains Mono',monospace; font-size:.6rem;
+.filter-row{
+  display:flex; align-items:center; gap:.4rem;
+  margin-top:.45rem; flex-wrap:wrap;
+}
+.cat-select,.sort-btn{
+  font-family:'JetBrains Mono',monospace; font-size:.57rem;
   background:var(--tag-bg); color:var(--tag-color);
   border:1px solid var(--tag-border); border-radius:3px;
   padding:2px 8px; cursor:pointer; outline:none;
   transition:background .12s;
 }
 .cat-select:hover,.sort-btn:hover{background:var(--hover-row);}
-.sort-btn.active{background:var(--acc); color:#fff; border-color:var(--acc);}
+.sort-btn.asc{background:var(--acc); color:#fff; border-color:var(--acc);}
 .result-count{
-  font-family:'JetBrains Mono',monospace; font-size:.55rem;
+  font-family:'JetBrains Mono',monospace; font-size:.52rem;
   color:var(--silver); margin-left:auto;
 }
 
-/* ── Report list ── */
-.report-list{flex:1; overflow-y:auto; padding:.3rem 0;}
-.report-item{
-  display:block; padding:.55rem 1.3rem;
-  border-left:3px solid transparent;
-  cursor:pointer; transition:background .12s, border-color .12s;
-  text-decoration:none; color:inherit;
+/* ── Lists ── */
+.report-list,.data-list{
+  flex:1; overflow-y:auto; padding:.4rem 0;
 }
-.report-item:hover{background:var(--hover-row);}
-.report-item.active{border-left-color:var(--acc); background:var(--tag-bg);}
-.report-item-title{
-  font-family:'JetBrains Mono',monospace; font-size:.68rem;
+.data-list{ display:none; }
+
+.report-item,.data-item{
+  padding:.5rem 1.4rem;
+  border-left:2px solid transparent;
+  cursor:pointer;
+  transition:background .12s, border-color .12s;
+}
+.report-item:hover,.data-item:hover{ background:var(--hover-row); }
+.report-item.active,.data-item.active{
+  border-left-color:var(--acc);
+  background:var(--tag-bg);
+}
+.item-title{
+  font-family:'JetBrains Mono',monospace; font-size:.67rem;
   color:var(--text); line-height:1.4; display:block;
 }
-.report-item-meta{
-  font-family:'JetBrains Mono',monospace; font-size:.53rem;
-  color:var(--silver); margin-top:.15rem; display:flex; gap:.8rem;
+.item-meta{
+  font-family:'JetBrains Mono',monospace; font-size:.52rem;
+  color:var(--silver); margin-top:.12rem;
+  display:flex; gap:.7rem; align-items:center;
 }
-.report-item-meta .cat{color:var(--acc);}
+.item-meta .cat{ color:var(--acc); }
 
-/* ── Data list ── */
-.data-list{flex:1; overflow-y:auto; padding:.3rem 0; display:none;}
-.data-item{
-  display:block; padding:.55rem 1.3rem;
-  border-left:3px solid transparent;
-  cursor:pointer; transition:background .12s, border-color .12s;
+/* folder groups in data list */
+.data-group-header{
+  padding:.45rem 1.4rem .2rem;
+  font-family:'JetBrains Mono',monospace; font-size:.5rem;
+  letter-spacing:.15em; text-transform:uppercase;
+  color:var(--silver); border-top:1px solid var(--divider);
+  margin-top:.3rem;
 }
-.data-item:hover{background:var(--hover-row);}
-.data-item.active{border-left-color:var(--acc); background:var(--tag-bg);}
-.data-item-title{
-  font-family:'JetBrains Mono',monospace; font-size:.68rem;
-  color:var(--text); line-height:1.4; display:block;
-}
+.data-group-header:first-child{ border-top:none; margin-top:0; }
 
-/* ── Theme toggle (bottom of side panel) ── */
+/* ── Footer ── */
 .side-footer{
-  padding:.6rem 1.3rem; border-top:1px solid var(--sidebar-border);
-  display:flex; align-items:center; gap:.5rem;
+  flex-shrink:0; padding:.65rem 1.4rem;
+  border-top:1px solid var(--divider);
+  display:flex; align-items:center;
 }
-.tswrap{display:flex;align-items:center;gap:.5rem;font-family:'JetBrains Mono',monospace;font-size:.57rem;letter-spacing:.07em;text-transform:uppercase;color:var(--silver);}
-.tsw{position:relative;width:32px;height:17px;background:var(--border);border-radius:9px;cursor:pointer;border:1px solid var(--acc);flex-shrink:0;transition:background .2s;}
-.tsw::after{content:'';position:absolute;top:2px;left:2px;width:11px;height:11px;background:var(--acc);border-radius:50%;transition:transform .2s;}
-.tsw.on::after{transform:translateX(15px);}
+.tswrap{
+  display:flex; align-items:center; gap:.5rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.52rem; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--silver);
+}
+.tsw{
+  position:relative; width:30px; height:16px;
+  background:var(--border); border-radius:8px;
+  cursor:pointer; border:1px solid var(--acc); flex-shrink:0;
+  transition:background .2s;
+}
+.tsw::after{
+  content:''; position:absolute; top:2px; left:2px;
+  width:10px; height:10px; background:var(--acc);
+  border-radius:50%; transition:transform .2s;
+}
+.tsw.on::after{ transform:translateX(14px); }
+
+/* ── Resize handle ── */
+.resize-handle{
+  position:absolute; right:-3px; top:0; bottom:0; width:6px;
+  cursor:col-resize; z-index:10;
+}
+.resize-handle:hover::after,.resize-handle.dragging::after{
+  content:''; position:absolute;
+  left:2px; top:0; bottom:0; width:2px;
+  background:var(--acc); opacity:.5;
+}
 
 /* ── Viewer ── */
-.viewer{flex:1; display:flex; flex-direction:column; min-width:0; background:var(--bg);}
+.viewer{
+  flex:1; display:flex; flex-direction:column;
+  min-width:0; background:var(--bg);
+}
 .viewer-toolbar{
-  display:flex; align-items:center; gap:.6rem;
-  padding:.45rem 1rem; border-bottom:1px solid var(--border);
-  background:var(--sidebar-bg); transition:background .25s;
+  display:flex; align-items:center; gap:.5rem;
+  padding:.4rem 1rem; border-bottom:1px solid var(--border);
+  background:var(--sidebar-bg); flex-shrink:0;
+  transition:background .25s;
 }
-.viewer-toolbar .btn{
-  font-family:'JetBrains Mono',monospace; font-size:.58rem;
-  letter-spacing:.08em; text-transform:uppercase;
-  color:var(--acc); background:none; border:1px solid var(--acc);
-  border-radius:3px; padding:2px 10px; cursor:pointer;
-  text-decoration:none; transition:background .12s, color .12s;
-}
-.viewer-toolbar .btn:hover{background:var(--acc); color:#fff;}
-.viewer-toolbar .viewer-title{
+.viewer-title{
   flex:1; font-family:'JetBrains Mono',monospace;
-  font-size:.62rem; color:var(--sub);
+  font-size:.6rem; color:var(--sub);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.viewer-frame{flex:1; border:none; width:100%; background:#fff;}
+.viewer-toolbar .btn{
+  font-family:'JetBrains Mono',monospace; font-size:.55rem;
+  letter-spacing:.07em; text-transform:uppercase;
+  color:var(--acc); background:none; border:1px solid var(--acc);
+  border-radius:3px; padding:2px 9px; cursor:pointer;
+  text-decoration:none; transition:background .12s, color .12s;
+  white-space:nowrap;
+}
+.viewer-toolbar .btn:hover{ background:var(--acc); color:#fff; }
+
+.viewer-frame{ flex:1; border:none; width:100%; }
 .viewer-placeholder{
-  flex:1; display:flex; align-items:center; justify-content:center;
-  font-family:'JetBrains Mono',monospace; font-size:.75rem;
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:.6rem;
+  font-family:'JetBrains Mono',monospace;
   color:var(--silver); text-align:center; padding:2rem;
 }
+.viewer-placeholder .ph-label{ font-size:.65rem; }
+.viewer-placeholder .ph-hint{ font-size:.52rem; opacity:.6; }
 
 /* ── Markdown viewer ── */
 .md-viewer{
-  flex:1; overflow-y:auto; padding:2.5rem 3rem;
+  flex:1; overflow-y:auto;
+  padding:2.5rem min(4rem, 6vw);
   display:none;
   font-family:var(--font-body),'EB Garamond',Georgia,serif;
-  font-size:1rem; line-height:1.78; color:var(--text);
+  font-size:1rem; line-height:1.82; color:var(--text);
+  max-width:860px; margin:0 auto; width:100%;
 }
 .md-viewer h1,.md-viewer h2,.md-viewer h3,.md-viewer h4{
   font-family:var(--font-body); font-weight:500;
-  color:var(--text); margin:1.6rem 0 .5rem;
+  color:var(--text); margin:2rem 0 .5rem; line-height:1.3;
 }
-.md-viewer h1{font-size:1.6rem;}
-.md-viewer h2{font-size:1.25rem; border-bottom:1px solid var(--border); padding-bottom:.3rem;}
-.md-viewer h3{font-size:1.05rem;}
-.md-viewer p{margin:.6rem 0;}
-.md-viewer a{color:var(--acc);}
+.md-viewer h1{ font-size:1.7rem; margin-top:0; }
+.md-viewer h2{ font-size:1.25rem; border-bottom:1px solid var(--border); padding-bottom:.3rem; }
+.md-viewer h3{ font-size:1.05rem; }
+.md-viewer p{ margin:.65rem 0; }
+.md-viewer a{ color:var(--acc); }
 .md-viewer code{
-  font-family:'JetBrains Mono',monospace; font-size:.75rem;
+  font-family:'JetBrains Mono',monospace; font-size:.75em;
   background:var(--tag-bg); padding:1px 5px; border-radius:3px;
 }
 .md-viewer pre{
   background:var(--code-bg); border:1px solid var(--code-border);
-  border-radius:4px; padding:1rem; overflow-x:auto; margin:1rem 0;
+  border-radius:5px; padding:1.1rem 1.3rem; overflow-x:auto; margin:1.2rem 0;
 }
-.md-viewer pre code{background:none; padding:0; color:#c0d0dc;}
-.md-viewer ul,.md-viewer ol{padding-left:1.5rem; margin:.5rem 0;}
+.md-viewer pre code{ background:none; padding:0; color:#9eb8cc; font-size:.8rem; }
+.md-viewer ul,.md-viewer ol{ padding-left:1.6rem; margin:.6rem 0; }
+.md-viewer li{ margin:.2rem 0; }
 .md-viewer blockquote{
-  border-left:3px solid var(--acc); margin:.8rem 0;
-  padding:.4rem 1rem; color:var(--sub);
+  border-left:3px solid var(--acc); margin:.9rem 0;
+  padding:.4rem 1.1rem; color:var(--sub); font-style:italic;
 }
-.md-viewer table{border-collapse:collapse; width:100%; margin:1rem 0;}
+.md-viewer table{ border-collapse:collapse; width:100%; margin:1.1rem 0; }
 .md-viewer th,.md-viewer td{
-  border:1px solid var(--border); padding:.4rem .8rem;
-  font-family:'JetBrains Mono',monospace; font-size:.72rem;
+  border:1px solid var(--border); padding:.4rem .9rem;
+  font-family:'JetBrains Mono',monospace; font-size:.7rem;
 }
-.md-viewer th{background:var(--tag-bg); color:var(--acc);}
+.md-viewer th{ background:var(--tag-bg); color:var(--acc); font-weight:500; }
+.md-viewer tr:nth-child(even) td{ background:var(--hover-row); }
+.md-viewer hr{ border:none; border-top:1px solid var(--border); margin:1.5rem 0; }
 
-/* ── Scrollbar ── */
-.report-list::-webkit-scrollbar,.data-list::-webkit-scrollbar,.md-viewer::-webkit-scrollbar{width:4px;}
-.report-list::-webkit-scrollbar-thumb,.data-list::-webkit-scrollbar-thumb,.md-viewer::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+/* ── Scrollbars ── */
+.report-list::-webkit-scrollbar,
+.data-list::-webkit-scrollbar,
+.md-viewer::-webkit-scrollbar{ width:3px; }
+.report-list::-webkit-scrollbar-thumb,
+.data-list::-webkit-scrollbar-thumb,
+.md-viewer::-webkit-scrollbar-thumb{ background:var(--border); border-radius:2px; }
 
-/* ── Empty state ── */
 .empty-state{
-  padding:2rem 1.3rem; text-align:center;
-  font-family:'JetBrains Mono',monospace; font-size:.65rem;
-  color:var(--silver);
+  padding:2.5rem 1.4rem; text-align:center;
+  font-family:'JetBrains Mono',monospace; font-size:.62rem;
+  color:var(--silver); line-height:1.8;
 }
 </style>
 </head>
@@ -229,39 +287,32 @@ body{
 <div class="hub-shell">
 
   <!-- ── Side panel ── -->
-  <div class="side-panel">
+  <div class="side-panel" id="sidePanel">
+
     <div class="side-header">
-      <div class="side-title">
-        <span>Marker Intelligence P</span>
-        MIP
-      </div>
+      <div class="brand-label">Marker Intelligence Platform</div>
+      <div class="brand-title">MIP</div>
     </div>
 
-    <!-- Tab nav -->
     <div class="tab-nav">
       <button class="tab-btn active" id="tabReports" onclick="switchTab('reports')">Reports</button>
-      <button class="tab-btn" id="tabData" onclick="switchTab('data')">Data</button>
+      <button class="tab-btn"        id="tabData"    onclick="switchTab('data')">Data</button>
     </div>
 
-    <!-- Controls (reports only) -->
     <div class="controls" id="reportControls">
-      <input type="text" class="search-box" id="searchBox" placeholder="Search by title…" autocomplete="off">
+      <input type="text" class="search-box" id="searchBox" placeholder="Search reports…" autocomplete="off">
       <div class="filter-row">
         <select class="cat-select" id="catSelect">
-          <option value="">All Categories</option>
+          <option value="">All categories</option>
         </select>
-        <button class="sort-btn" id="sortBtn" title="Sort by date (newest first)">Date ↓</button>
+        <button class="sort-btn" id="sortBtn">Date ↓</button>
         <span class="result-count" id="resultCount"></span>
       </div>
     </div>
 
-    <!-- Report list -->
     <div class="report-list" id="reportList"></div>
+    <div class="data-list"   id="dataList"></div>
 
-    <!-- Data list -->
-    <div class="data-list" id="dataList"></div>
-
-    <!-- Theme toggle + footer -->
     <div class="side-footer">
       <div class="tswrap">
         <span>Navy</span>
@@ -269,6 +320,8 @@ body{
         <span>Gunmetal</span>
       </div>
     </div>
+
+    <div class="resize-handle" id="resizeHandle"></div>
   </div>
 
   <!-- ── Viewer ── -->
@@ -277,42 +330,39 @@ body{
       <span class="viewer-title" id="viewerTitle"></span>
       <a class="btn" id="btnNewTab" href="#" target="_blank">Open ↗</a>
       <a class="btn" id="btnDownload" href="#" download>Download ↓</a>
-      <button class="btn" id="btnClose" onclick="closeViewer()">Close ✕</button>
+      <button class="btn" onclick="closeViewer()">Close ✕</button>
     </div>
     <div class="viewer-placeholder" id="viewerPlaceholder">
-      Select a report from the list to view it here.
+      <span class="ph-label">Nothing selected</span>
+      <span class="ph-hint">Choose a report or data file from the left panel</span>
     </div>
     <iframe class="viewer-frame" id="viewerFrame" style="display:none;"></iframe>
     <div class="md-viewer" id="mdViewer"></div>
   </div>
 
 </div>
-
 <script>
 (function(){
-  /* ── State ── */
-  let reports = [];
+  let reports  = [];
   let sortDesc = true;
   let activeFile = null;
-  let currentTab = 'reports';
 
-  /* ── DOM refs ── */
-  const searchBox         = document.getElementById('searchBox');
-  const catSelect         = document.getElementById('catSelect');
-  const sortBtn           = document.getElementById('sortBtn');
-  const reportList        = document.getElementById('reportList');
-  const dataList          = document.getElementById('dataList');
-  const reportControls    = document.getElementById('reportControls');
-  const resultCount       = document.getElementById('resultCount');
-  const viewerToolbar     = document.getElementById('viewerToolbar');
-  const viewerTitle       = document.getElementById('viewerTitle');
-  const viewerFrame       = document.getElementById('viewerFrame');
+  const searchBox      = document.getElementById('searchBox');
+  const catSelect      = document.getElementById('catSelect');
+  const sortBtn        = document.getElementById('sortBtn');
+  const reportList     = document.getElementById('reportList');
+  const dataList       = document.getElementById('dataList');
+  const reportControls = document.getElementById('reportControls');
+  const resultCount    = document.getElementById('resultCount');
+  const viewerToolbar  = document.getElementById('viewerToolbar');
+  const viewerTitle    = document.getElementById('viewerTitle');
+  const viewerFrame    = document.getElementById('viewerFrame');
   const viewerPlaceholder = document.getElementById('viewerPlaceholder');
-  const mdViewer          = document.getElementById('mdViewer');
-  const btnNewTab         = document.getElementById('btnNewTab');
-  const btnDownload       = document.getElementById('btnDownload');
+  const mdViewer       = document.getElementById('mdViewer');
+  const btnNewTab      = document.getElementById('btnNewTab');
+  const btnDownload    = document.getElementById('btnDownload');
 
-  /* ── Theme toggle ── */
+  /* ── Theme ── */
   window.toggleTheme = function(){
     const dark = document.documentElement.classList.toggle('gunmetal');
     document.documentElement.classList.toggle('navy', !dark);
@@ -320,186 +370,201 @@ body{
     localStorage.setItem('hub-theme', dark ? 'gunmetal' : 'navy');
   };
   (function(){
-    const saved = localStorage.getItem('hub-theme');
-    if(saved === 'gunmetal'){
-      document.documentElement.classList.remove('navy');
-      document.documentElement.classList.add('gunmetal');
+    if(localStorage.getItem('hub-theme') === 'gunmetal'){
+      document.documentElement.classList.replace('navy','gunmetal');
       document.getElementById('tsw').classList.add('on');
     }
   })();
 
-  /* ── Tab switching ── */
+  /* ── Tabs ── */
   window.switchTab = function(tab){
-    currentTab = tab;
     document.getElementById('tabReports').classList.toggle('active', tab === 'reports');
     document.getElementById('tabData').classList.toggle('active', tab === 'data');
-    reportControls.style.display = tab === 'reports' ? '' : 'none';
-    reportList.style.display     = tab === 'reports' ? '' : 'none';
-    dataList.style.display       = tab === 'data'    ? '' : 'none';
+    reportControls.style.display = tab === 'reports' ? 'block' : 'none';
+    reportList.style.display     = tab === 'reports' ? 'block' : 'none';
+    dataList.style.display       = tab === 'data'    ? 'block' : 'none';
     closeViewer();
   };
 
-  /* ── Load reports manifest ── */
+  /* ── Load reports ── */
   fetch('reports.json')
-    .then(r => r.json())
-    .then(data => {
+    .then(r=>{ if(!r.ok) throw r; return r.json(); })
+    .then(data=>{
       reports = data;
-      buildCategoryFilter();
-      renderList();
+      buildCatFilter();
+      renderReports();
     })
-    .catch(() => {
-      reportList.innerHTML = '<div class="empty-state">Failed to load reports.json</div>';
+    .catch(()=>{
+      reportList.innerHTML = '<div class="empty-state">Could not load reports.json</div>';
     });
 
-  /* ── Load data manifest ── */
+  /* ── Load data ── */
   fetch('data.json')
-    .then(r => r.json())
+    .then(r=>{ if(!r.ok) throw r; return r.json(); })
     .then(files => renderDataList(files))
-    .catch(() => {
-      dataList.innerHTML = '<div class="empty-state">No data files found.<br>Add .md files to data/ and push.</div>';
+    .catch(()=>{
+      dataList.innerHTML = '<div class="empty-state">No data files found.<br>Commit .md files to data/</div>';
     });
 
-  /* ── Build category dropdown ── */
-  function buildCategoryFilter(){
-    const cats = [...new Set(reports.map(r => r.category).filter(Boolean))].sort();
-    cats.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c; opt.textContent = c;
-      catSelect.appendChild(opt);
+  /* ── Category filter ── */
+  function buildCatFilter(){
+    const cats = [...new Set(reports.map(r=>r.category).filter(Boolean))].sort();
+    cats.forEach(c=>{
+      const o = document.createElement('option');
+      o.value = c; o.textContent = c;
+      catSelect.appendChild(o);
     });
   }
 
-  /* ── Filter + sort ── */
   function getFiltered(){
     const q = searchBox.value.trim().toLowerCase();
     const cat = catSelect.value;
-    let list = reports.filter(r => {
-      if(cat && r.category !== cat) return false;
-      if(q && !r.title.toLowerCase().includes(q)) return false;
-      return true;
-    });
-    list.sort((a,b) => {
-      const da = a.date || '', db = b.date || '';
-      if(da < db) return sortDesc ? 1 : -1;
-      if(da > db) return sortDesc ? -1 : 1;
-      return a.title.localeCompare(b.title);
-    });
-    return list;
+    return reports
+      .filter(r=>(!cat || r.category===cat) && (!q || r.title.toLowerCase().includes(q)))
+      .sort((a,b)=>{
+        const da=a.date||'', db=b.date||'';
+        if(da<db) return sortDesc?1:-1;
+        if(da>db) return sortDesc?-1:1;
+        return a.title.localeCompare(b.title);
+      });
   }
 
-  /* ── Render report list ── */
-  function renderList(){
+  /* ── Render reports ── */
+  function renderReports(){
     const list = getFiltered();
-    resultCount.textContent = list.length + ' report' + (list.length !== 1 ? 's' : '');
-    if(list.length === 0){
-      reportList.innerHTML = '<div class="empty-state">No reports match your search.</div>';
+    resultCount.textContent = list.length + (list.length===1?' report':' reports');
+    if(!list.length){
+      reportList.innerHTML='<div class="empty-state">No matching reports.</div>';
       return;
     }
-    reportList.innerHTML = '';
-    list.forEach(r => {
-      const el = document.createElement('div');
-      el.className = 'report-item' + (r.file === activeFile ? ' active' : '');
-      el.innerHTML =
-        '<span class="report-item-title">' + escHtml(r.title) + '</span>' +
-        '<div class="report-item-meta">' +
-          (r.category ? '<span class="cat">' + escHtml(r.category) + '</span>' : '') +
-          (r.date ? '<span>' + formatDate(r.date) + '</span>' : '') +
+    reportList.innerHTML='';
+    list.forEach(r=>{
+      const el=document.createElement('div');
+      el.className='report-item'+(r.file===activeFile?' active':'');
+      el.innerHTML=
+        '<span class="item-title">'+esc(r.title)+'</span>'+
+        '<div class="item-meta">'+
+          (r.category?'<span class="cat">'+esc(r.category)+'</span>':'')+
+          (r.date?'<span>'+fmtDate(r.date)+'</span>':'')+
         '</div>';
-      el.addEventListener('click', () => openReport(r));
+      el.addEventListener('click',()=>openReport(r));
       reportList.appendChild(el);
     });
   }
 
-  /* ── Render data list ── */
+  /* ── Render data list (grouped by folder) ── */
   function renderDataList(files){
-    if(!files || files.length === 0){
-      dataList.innerHTML = '<div class="empty-state">No data files yet.</div>';
+    if(!files||!files.length){
+      dataList.innerHTML='<div class="empty-state">No data files yet.<br>Commit .md files to data/</div>';
       return;
     }
-    dataList.innerHTML = '';
-    files.forEach(f => {
-      const el = document.createElement('div');
-      el.className = 'data-item';
-      el.innerHTML = '<span class="data-item-title">' + escHtml(f.title || f.file) + '</span>';
-      el.addEventListener('click', () => openMarkdown(f, el));
-      dataList.appendChild(el);
+    // group by leading folder path
+    const groups = {};
+    files.forEach(f=>{
+      const parts = f.file.split('/');
+      const group = parts.length>1 ? parts.slice(0,-1).join(' / ') : '—';
+      (groups[group]=groups[group]||[]).push(f);
+    });
+    dataList.innerHTML='';
+    Object.entries(groups).forEach(([grp,items])=>{
+      const hdr=document.createElement('div');
+      hdr.className='data-group-header';
+      hdr.textContent=grp;
+      dataList.appendChild(hdr);
+      items.forEach(f=>{
+        const el=document.createElement('div');
+        el.className='data-item';
+        el.innerHTML='<span class="item-title">'+esc(f.title||f.file)+'</span>';
+        el.addEventListener('click',()=>openMarkdown(f,el));
+        dataList.appendChild(el);
+      });
     });
   }
 
-  /* ── Open report in iframe ── */
+  /* ── Open report ── */
   function openReport(r){
-    activeFile = r.file;
-    const url = 'reports/' + r.file;
-    mdViewer.style.display = 'none';
-    viewerFrame.src = url;
-    viewerFrame.style.display = 'block';
-    viewerPlaceholder.style.display = 'none';
-    viewerToolbar.style.display = 'flex';
-    viewerTitle.textContent = r.title;
-    btnNewTab.href = url;
-    btnDownload.href = url;
-    btnDownload.download = r.file;
-    document.querySelectorAll('.report-item').forEach(el => el.classList.remove('active'));
-    reportList.querySelectorAll('.report-item').forEach(el => {
-      if(el.querySelector('.report-item-title').textContent === r.title)
-        el.classList.add('active');
+    activeFile=r.file;
+    const url='reports/'+r.file;
+    mdViewer.style.display='none';
+    viewerFrame.src=url;
+    viewerFrame.style.display='block';
+    viewerPlaceholder.style.display='none';
+    viewerToolbar.style.display='flex';
+    viewerTitle.textContent=r.title;
+    btnNewTab.href=url;
+    btnDownload.href=url; btnDownload.download=r.file;
+    document.querySelectorAll('.report-item').forEach(e=>e.classList.remove('active'));
+    reportList.querySelectorAll('.report-item').forEach(e=>{
+      if(e.querySelector('.item-title').textContent===r.title) e.classList.add('active');
     });
   }
 
-  /* ── Open markdown file ── */
-  function openMarkdown(f, itemEl){
-    document.querySelectorAll('.data-item').forEach(el => el.classList.remove('active'));
+  /* ── Open markdown ── */
+  function openMarkdown(f,itemEl){
+    document.querySelectorAll('.data-item').forEach(e=>e.classList.remove('active'));
     itemEl.classList.add('active');
-    viewerFrame.style.display = 'none';
-    viewerFrame.src = 'about:blank';
-    viewerPlaceholder.style.display = 'none';
-    viewerToolbar.style.display = 'flex';
-    viewerTitle.textContent = f.title || f.file;
-    btnNewTab.href = 'data/' + f.file;
-    btnDownload.href = 'data/' + f.file;
-    btnDownload.download = f.file;
-    mdViewer.style.display = 'block';
-    mdViewer.innerHTML = '<div class="empty-state">Loading…</div>';
-    fetch('data/' + f.file)
-      .then(r => r.text())
-      .then(md => { mdViewer.innerHTML = marked.parse(md); })
-      .catch(() => { mdViewer.innerHTML = '<div class="empty-state">Failed to load file.</div>'; });
+    viewerFrame.style.display='none'; viewerFrame.src='about:blank';
+    viewerPlaceholder.style.display='none';
+    viewerToolbar.style.display='flex';
+    viewerTitle.textContent=f.title||f.file;
+    btnNewTab.href='data/'+f.file;
+    btnDownload.href='data/'+f.file; btnDownload.download=f.file.split('/').pop();
+    mdViewer.style.display='block';
+    mdViewer.innerHTML='<div class="empty-state">Loading…</div>';
+    fetch('data/'+f.file)
+      .then(r=>{ if(!r.ok) throw r; return r.text(); })
+      .then(md=>{ mdViewer.innerHTML=marked.parse(md); mdViewer.scrollTop=0; })
+      .catch(()=>{ mdViewer.innerHTML='<div class="empty-state">Failed to load file.</div>'; });
   }
 
   /* ── Close viewer ── */
-  window.closeViewer = function(){
-    activeFile = null;
-    viewerFrame.src = 'about:blank';
-    viewerFrame.style.display = 'none';
-    mdViewer.style.display = 'none';
-    mdViewer.innerHTML = '';
-    viewerPlaceholder.style.display = 'flex';
-    viewerToolbar.style.display = 'none';
-    document.querySelectorAll('.report-item,.data-item').forEach(el => el.classList.remove('active'));
+  window.closeViewer=function(){
+    activeFile=null;
+    viewerFrame.src='about:blank'; viewerFrame.style.display='none';
+    mdViewer.style.display='none'; mdViewer.innerHTML='';
+    viewerPlaceholder.style.display='flex';
+    viewerToolbar.style.display='none';
+    document.querySelectorAll('.report-item,.data-item').forEach(e=>e.classList.remove('active'));
   };
 
-  /* ── Sort toggle ── */
-  sortBtn.addEventListener('click', () => {
-    sortDesc = !sortDesc;
-    sortBtn.textContent = sortDesc ? 'Date ↓' : 'Date ↑';
-    sortBtn.classList.toggle('active', !sortDesc);
-    renderList();
+  /* ── Sort ── */
+  sortBtn.addEventListener('click',()=>{
+    sortDesc=!sortDesc;
+    sortBtn.textContent=sortDesc?'Date ↓':'Date ↑';
+    sortBtn.classList.toggle('asc',!sortDesc);
+    renderReports();
+  });
+  searchBox.addEventListener('input',renderReports);
+  catSelect.addEventListener('change',renderReports);
+
+  /* ── Resizable panel ── */
+  const panel=document.getElementById('sidePanel');
+  const handle=document.getElementById('resizeHandle');
+  let dragging=false, startX=0, startW=0;
+  handle.addEventListener('mousedown',e=>{
+    dragging=true; startX=e.clientX; startW=panel.offsetWidth;
+    handle.classList.add('dragging');
+    document.body.style.userSelect='none';
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!dragging) return;
+    const w=Math.min(480,Math.max(240,startW+(e.clientX-startX)));
+    panel.style.width=w+'px';
+  });
+  document.addEventListener('mouseup',()=>{
+    dragging=false;
+    handle.classList.remove('dragging');
+    document.body.style.userSelect='';
   });
 
-  searchBox.addEventListener('input', renderList);
-  catSelect.addEventListener('change', renderList);
-
   /* ── Helpers ── */
-  function escHtml(s){
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-  function formatDate(d){
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function fmtDate(d){
     if(!d) return '';
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const parts = d.split('T');
-    if(parts.length < 2) return d;
-    const [y,m,day] = parts[0].split('-');
-    return day + ' ' + (months[parseInt(m,10)-1]||m) + ' ' + y + ', ' + parts[1];
+    const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const [dt,tm]=d.split('T');
+    const [y,m,day]=dt.split('-');
+    return day+' '+(mo[+m-1]||m)+' '+y+(tm?', '+tm:'');
   }
 })();
 </script>

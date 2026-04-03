@@ -6,255 +6,77 @@
 <title>MIP — Market Intelligence Platform</title>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root.navy {
-  --bg:#f2f4f6; --border:#D8E4EC;
-  --text:#060F22; --sub:#3a5060; --acc:#0E6090; --silver:#A8B8C8;
-  --code-bg:#0a0f1a; --code-border:#1e2d42;
-  --tag-bg:rgba(14,96,144,0.1); --tag-border:#0E6090; --tag-color:#0E6090;
-  --sidebar-bg:#eaecf0; --sidebar-border:#D8E4EC;
-  --font-body:Georgia,serif; --hover-row:rgba(14,96,144,0.06); --divider:#c8d8e4;
-}
-:root.gunmetal {
-  --bg:#030A14; --border:#708898;
-  --text:#C0D0DC; --sub:#7090a8; --acc:#38B8E0; --silver:#506878;
-  --code-bg:#040810; --code-border:#708898;
-  --tag-bg:rgba(56,184,224,0.08); --tag-border:#38B8E0; --tag-color:#38B8E0;
-  --sidebar-bg:#040d18; --sidebar-border:#1a2e3e;
-  --font-body:Georgia,serif; --hover-row:rgba(56,184,224,0.05); --divider:#1a2e3e;
-}
-
-/* Logo theme visibility */
-.navy .logo-dark    { display:none; }
-.gunmetal .logo-light { display:none; }
-
-*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
-html, body {
-  height:100%; min-height:100vh;
-  background:var(--bg); color:var(--text);
-  font-family:'EB Garamond',Georgia,var(--font-body),serif;
-  line-height:1.78; -webkit-font-smoothing:antialiased;
-  transition:background .25s, color .25s;
-}
-
-/* ── Top nav ── */
-.top-nav {
-  position:fixed; top:0; left:0; right:0; z-index:100;
-  display:flex; align-items:center; justify-content:space-between;
-  padding:.75rem 2.5rem;
-  background:var(--sidebar-bg);
-  border-bottom:1px solid var(--divider);
-  transition:background .25s, border-color .25s;
-}
-.nav-logo {
-  display:flex; align-items:center; gap:.65rem;
-  text-decoration:none;
-}
-.nav-logo img {
-  height:22px; width:auto; display:block;
-}
-.nav-brand {
-  font-family:'JetBrains Mono',monospace;
-  font-size:.58rem; letter-spacing:.15em; text-transform:uppercase;
-  color:var(--acc);
-}
-.nav-right {
-  display:flex; align-items:center; gap:.75rem;
-}
-.nav-link {
-  font-family:'JetBrains Mono',monospace; font-size:.55rem;
-  letter-spacing:.08em; text-transform:uppercase;
-  color:var(--acc); background:none; border:1px solid var(--acc);
-  border-radius:3px; padding:3px 11px; cursor:pointer;
-  text-decoration:none; transition:background .12s, color .12s;
-  white-space:nowrap;
-}
-.nav-link:hover { background:var(--acc); color:#fff; }
-
-/* Theme toggle */
-.tswrap {
-  display:flex; align-items:center; gap:.45rem;
-  font-family:'JetBrains Mono',monospace;
-  font-size:.5rem; letter-spacing:.07em; text-transform:uppercase;
-  color:var(--silver);
-}
-.tsw {
-  position:relative; width:28px; height:15px;
-  background:var(--border); border-radius:8px;
-  cursor:pointer; border:1px solid var(--acc); flex-shrink:0;
-  transition:background .2s;
-}
-.tsw::after {
-  content:''; position:absolute; top:2px; left:2px;
-  width:9px; height:9px; background:var(--acc);
-  border-radius:50%; transition:transform .2s;
-}
-.tsw.on::after { transform:translateX(13px); }
-
-/* ── Main content ── */
-.page-wrap {
-  min-height:100vh;
-  display:flex; flex-direction:column;
-  align-items:center;
-  justify-content:center; padding:80px 1.5rem 5rem;
-}
-
-/* ── Hero ── */
-.hero {
-  display:flex; flex-direction:column;
-  align-items:center; text-align:center;
-  gap:1.1rem; max-width:580px; padding:0 1.5rem;
-}
-.hero-logo {
-  width:200px; height:auto; display:block;
-  margin-bottom:.4rem;
-}
-.hero-logo.hidden { display:none; }
-.hero-title {
-  font-family:'EB Garamond',Georgia,serif;
-  font-size:2.5rem; font-weight:500;
-  color:var(--text); line-height:1.2; letter-spacing:-.01em;
-}
-.hero-sub {
-  font-family:'EB Garamond',Georgia,serif;
-  font-size:1.05rem; color:var(--sub); line-height:1.7;
-  max-width:520px;
-}
-
-/* ── Stats row ── */
-.stats-row {
-  display:flex; flex-wrap:wrap;
-  gap:1rem; justify-content:center;
-  margin:2.5rem 0;
-}
-.stat-card {
-  display:flex; flex-direction:column; align-items:center;
-  padding:1.5rem 2.5rem;
-  border:1px solid var(--border); border-radius:6px;
-  background:var(--sidebar-bg);
-  transition:background .25s, border-color .25s;
-  min-width:120px;
-}
-.stat-num {
-  font-family:'JetBrains Mono',monospace;
-  font-size:2rem; font-weight:500;
-  color:var(--acc); line-height:1.1;
-}
-.stat-label {
-  font-family:'JetBrains Mono',monospace;
-  font-size:.48rem; letter-spacing:.15em; text-transform:uppercase;
-  color:var(--silver); margin-top:.45rem;
-}
-
-/* ── CTA buttons ── */
-.cta-row {
-  display:flex; flex-wrap:wrap; gap:.75rem; justify-content:center;
-  margin-top:.5rem;
-}
-.cta-btn {
-  font-family:'JetBrains Mono',monospace; font-size:.58rem;
-  letter-spacing:.08em; text-transform:uppercase;
-  color:var(--acc); background:none; border:1px solid var(--acc);
-  border-radius:3px; padding:7px 20px; cursor:pointer;
-  text-decoration:none; transition:background .12s, color .12s;
-  white-space:nowrap;
-}
-.cta-btn:hover { background:var(--acc); color:#fff; }
-
-/* ── Footer ── */
-.page-footer {
-  position:fixed; bottom:0; left:0; right:0;
-  padding:.75rem 2.5rem;
-  text-align:center;
-  font-family:'JetBrains Mono',monospace;
-  font-size:.5rem; letter-spacing:.1em; text-transform:uppercase;
-  color:var(--silver);
-  border-top:1px solid var(--divider);
-  background:var(--sidebar-bg);
-  transition:background .25s, border-color .25s;
-}
+:root.navy{--bg:#f2f4f6;--text:#060F22;--sub:#3a5060;--acc:#0E6090;--silver:#A8B8C8;--border:#D8E4EC;}
+:root.gunmetal{--bg:#030A14;--text:#C0D0DC;--sub:#7090a8;--acc:#38B8E0;--silver:#506878;--border:#708898;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,serif;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s;}
+body{display:flex;align-items:center;justify-content:center;min-height:100vh;}
+.landing{display:flex;flex-direction:column;align-items:center;gap:2.8rem;padding:2rem;}
+.logo-wrap{width:280px;max-width:80vw;}
+.logo-wrap svg{width:100%;height:auto;display:block;}
+.navy .logo-dark{display:none;}
+.gunmetal .logo-light{display:none;}
+.btn-row{display:flex;gap:1.2rem;flex-wrap:wrap;justify-content:center;}
+.btn-big{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);background:none;border:1px solid var(--acc);border-radius:4px;padding:10px 36px;cursor:pointer;text-decoration:none;transition:background .15s,color .15s;white-space:nowrap;}
+.btn-big:hover{background:var(--acc);color:#fff;}
+.theme-wrap{position:fixed;bottom:1.8rem;right:2rem;display:flex;align-items:center;gap:.45rem;font-family:'JetBrains Mono',monospace;font-size:.48rem;letter-spacing:.1em;text-transform:uppercase;color:var(--silver);}
+.tsw{position:relative;width:28px;height:15px;background:var(--border);border-radius:8px;cursor:pointer;border:1px solid var(--acc);flex-shrink:0;transition:background .2s;}
+.tsw::after{content:'';position:absolute;top:2px;left:2px;width:9px;height:9px;background:var(--acc);border-radius:50%;transition:transform .2s;}
+.tsw.on::after{transform:translateX(13px);}
 </style>
 </head>
 <body>
-
-<!-- ── Top nav ── -->
-<nav class="top-nav">
-  <div class="nav-logo">
-    <img class="logo-light" src="logo-light.svg" alt="MIP" onerror="this.style.display='none'">
-    <img class="logo-dark"  src="logo-dark.svg"  alt="MIP" onerror="this.style.display='none'">
-    <span class="nav-brand">MIP</span>
+<main class="landing">
+  <div class="logo-wrap logo-light">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 265" fill="none">
+      <path d="M 72 24 L 196 18" stroke="#0E6090" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M 196 18 Q 318 12 322 95 Q 325 162 268 176" stroke="#0E6090" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="72" cy="24" r="6.5" fill="#0E6090"/>
+      <circle cx="196" cy="18" r="6.5" fill="#0E6090"/>
+      <circle cx="268" cy="176" r="6.5" fill="#0E6090"/>
+      <text x="14" y="172" font-family="Georgia,'Times New Roman',serif" font-size="152" fill="#060F22">M</text>
+      <text x="172" y="172" font-family="Georgia,'Times New Roman',serif" font-size="152" fill="#0E6090">I</text>
+      <text x="204" y="172" font-family="Georgia,'Times New Roman',serif" font-size="152" fill="#060F22">P</text>
+      <text x="190" y="212" font-family="Georgia,'Times New Roman',serif" font-size="13.5" text-anchor="middle" letter-spacing="3" fill="#3a5060">MARKET INTELLIGENCE</text>
+      <text x="190" y="233" font-family="Georgia,'Times New Roman',serif" font-size="13.5" text-anchor="middle" letter-spacing="3" fill="#A8B8C8">PLATFORM</text>
+    </svg>
   </div>
-  <div class="nav-right">
-    <a class="nav-link" href="hub.html">Reports</a>
-    <a class="nav-link" href="hub.html?tab=data">Data</a>
-    <div class="tswrap">
-      <span>Navy</span>
-      <div class="tsw" id="tsw" onclick="toggleTheme()"></div>
-      <span>Gunmetal</span>
-    </div>
+  <div class="logo-wrap logo-dark">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 265" fill="none">
+      <path d="M 72 24 L 196 18" stroke="#38B8E0" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M 196 18 Q 318 12 322 95 Q 325 162 268 176" stroke="#38B8E0" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="72" cy="24" r="6.5" fill="#38B8E0"/>
+      <circle cx="196" cy="18" r="6.5" fill="#38B8E0"/>
+      <circle cx="268" cy="176" r="6.5" fill="#38B8E0"/>
+      <text x="14" y="172" font-family="Georgia,'Times New Roman',serif" font-size="152" fill="#C0D0DC">M</text>
+      <text x="172" y="172" font-family="Georgia,'Times New Roman',serif" font-size="152" fill="#38B8E0">I</text>
+      <text x="204" y="172" font-family="Georgia,'Times New Roman',serif" font-size="152" fill="#C0D0DC">P</text>
+      <text x="190" y="212" font-family="Georgia,'Times New Roman',serif" font-size="13.5" text-anchor="middle" letter-spacing="3" fill="#7090a8">MARKET INTELLIGENCE</text>
+      <text x="190" y="233" font-family="Georgia,'Times New Roman',serif" font-size="13.5" text-anchor="middle" letter-spacing="3" fill="#506878">PLATFORM</text>
+    </svg>
   </div>
-</nav>
-
-<!-- ── Page content ── -->
-<main class="page-wrap">
-  <section class="hero">
-    <img class="hero-logo logo-light" src="logo-light.svg" alt="MIP" onerror="this.style.display='none'">
-    <img class="hero-logo logo-dark"  src="logo-dark.svg"  alt="MIP" onerror="this.style.display='none'">
-    <h1 class="hero-title">Market Intelligence Platform</h1>
-    <p class="hero-sub">Centralised access to economic data, research reports, and API endpoints across multiple countries and sectors.</p>
-
-    <div class="stats-row">
-      <div class="stat-card">
-        <span class="stat-num" id="statReports">—</span>
-        <span class="stat-label">Reports</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-num" id="statEndpoints">—</span>
-        <span class="stat-label">Endpoints</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-num" id="statCountries">—</span>
-        <span class="stat-label">Countries</span>
-      </div>
-    </div>
-
-    <div class="cta-row">
-      <a class="cta-btn" href="hub.html">Browse Reports →</a>
-      <a class="cta-btn" href="hub.html?tab=data">Explore Data →</a>
-    </div>
-  </section>
+  <div class="btn-row">
+    <a class="btn-big" href="hub.html">Reports</a>
+    <a class="btn-big" href="hub.html?tab=data">Data</a>
+  </div>
 </main>
-
-<!-- ── Footer ── -->
-<footer class="page-footer">MIP &middot; Market Intelligence Platform</footer>
-
+<div class="theme-wrap">
+  <span>Navy</span>
+  <div class="tsw" id="tsw" onclick="toggleTheme()"></div>
+  <span>Gunmetal</span>
+</div>
 <script>
 (function(){
-  /* ── Theme ── */
-  window.toggleTheme = function(){
-    const dark = document.documentElement.classList.toggle('gunmetal');
-    document.documentElement.classList.toggle('navy', !dark);
-    document.getElementById('tsw').classList.toggle('on', dark);
-    localStorage.setItem('hub-theme', dark ? 'gunmetal' : 'navy');
+  window.toggleTheme=function(){
+    const dark=document.documentElement.classList.toggle('gunmetal');
+    document.documentElement.classList.toggle('navy',!dark);
+    document.getElementById('tsw').classList.toggle('on',dark);
+    localStorage.setItem('hub-theme',dark?'gunmetal':'navy');
   };
-  (function(){
-    if (localStorage.getItem('hub-theme') === 'gunmetal') {
-      document.documentElement.classList.replace('navy','gunmetal');
-      document.getElementById('tsw').classList.add('on');
-    }
-  })();
-
-  /* ── Load stats ── */
-  Promise.all([
-    fetch('reports.json').then(r => r.ok ? r.json() : []).catch(() => []),
-    fetch('data.json').then(r => r.ok ? r.json() : []).catch(() => [])
-  ]).then(([reports, dataFiles]) => {
-    const validReports = reports.filter(r => r.title && r.title !== 'Title missing');
-    const countries    = new Set(dataFiles.map(f => f.country).filter(Boolean));
-
-    document.getElementById('statReports').textContent   = validReports.length;
-    document.getElementById('statEndpoints').textContent = dataFiles.length;
-    document.getElementById('statCountries').textContent = countries.size;
-  });
+  if(localStorage.getItem('hub-theme')==='gunmetal'){
+    document.documentElement.classList.replace('navy','gunmetal');
+    document.getElementById('tsw').classList.add('on');
+  }
 })();
 </script>
 </body>

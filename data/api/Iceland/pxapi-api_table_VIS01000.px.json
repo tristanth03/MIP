@@ -1,0 +1,25 @@
+{"queryObj":{
+  "query": [
+    {
+      "code": "Index",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "CPI"
+        ]
+      }
+    },
+    {
+      "code": "Item",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "change_A"
+        ]
+      }
+    }
+  ],
+  "response": {
+    "format": "json"
+  }
+},"tableIdForQuery":"VIS01000.px"}

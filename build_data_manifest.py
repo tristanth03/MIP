@@ -27,11 +27,12 @@ def build_data_manifest():
         sys.exit(1)
 
     entries = []
-    for md_file in sorted(DATA_DIR.glob("*.md")):
+    for md_file in sorted(DATA_DIR.rglob("*.md")):
+        rel   = md_file.relative_to(DATA_DIR).as_posix()
         text  = md_file.read_text(encoding="utf-8", errors="replace")
-        title = extract_title(text, md_file.name)
-        entries.append({"file": md_file.name, "title": title})
-        print(f"  Indexed: {md_file.name}  →  {title}")
+        title = extract_title(text, md_file.stem)
+        entries.append({"file": rel, "title": title})
+        print(f"  Indexed: {rel}  →  {title}")
 
     MANIFEST_PATH.write_text(
         json.dumps(entries, indent=2, ensure_ascii=False), encoding="utf-8"

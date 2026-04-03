@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Report Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
 /* ── Theme variables: identical to reports ── */
 :root.navy {
@@ -63,6 +64,22 @@ body{
   display:block; margin-bottom:.35rem;
 }
 
+/* ── Tab nav ── */
+.tab-nav{
+  display:flex; border-bottom:1px solid var(--sidebar-border);
+}
+.tab-btn{
+  flex:1; padding:.5rem 0;
+  font-family:'JetBrains Mono',monospace; font-size:.62rem;
+  letter-spacing:.1em; text-transform:uppercase;
+  background:none; border:none; cursor:pointer;
+  color:var(--silver); border-bottom:2px solid transparent;
+  transition:color .15s, border-color .15s;
+  margin-bottom:-1px;
+}
+.tab-btn:hover{color:var(--acc);}
+.tab-btn.active{color:var(--acc); border-bottom-color:var(--acc);}
+
 /* ── Controls ── */
 .controls{padding:.7rem 1.3rem; border-bottom:1px solid var(--sidebar-border);}
 .search-box{
@@ -108,6 +125,20 @@ body{
 }
 .report-item-meta .cat{color:var(--acc);}
 
+/* ── Data list ── */
+.data-list{flex:1; overflow-y:auto; padding:.3rem 0; display:none;}
+.data-item{
+  display:block; padding:.55rem 1.3rem;
+  border-left:3px solid transparent;
+  cursor:pointer; transition:background .12s, border-color .12s;
+}
+.data-item:hover{background:var(--hover-row);}
+.data-item.active{border-left-color:var(--acc); background:var(--tag-bg);}
+.data-item-title{
+  font-family:'JetBrains Mono',monospace; font-size:.68rem;
+  color:var(--text); line-height:1.4; display:block;
+}
+
 /* ── Theme toggle (bottom of side panel) ── */
 .side-footer{
   padding:.6rem 1.3rem; border-top:1px solid var(--sidebar-border);
@@ -145,9 +176,46 @@ body{
   color:var(--silver); text-align:center; padding:2rem;
 }
 
+/* ── Markdown viewer ── */
+.md-viewer{
+  flex:1; overflow-y:auto; padding:2.5rem 3rem;
+  display:none;
+  font-family:var(--font-body),'EB Garamond',Georgia,serif;
+  font-size:1rem; line-height:1.78; color:var(--text);
+}
+.md-viewer h1,.md-viewer h2,.md-viewer h3,.md-viewer h4{
+  font-family:var(--font-body); font-weight:500;
+  color:var(--text); margin:1.6rem 0 .5rem;
+}
+.md-viewer h1{font-size:1.6rem;}
+.md-viewer h2{font-size:1.25rem; border-bottom:1px solid var(--border); padding-bottom:.3rem;}
+.md-viewer h3{font-size:1.05rem;}
+.md-viewer p{margin:.6rem 0;}
+.md-viewer a{color:var(--acc);}
+.md-viewer code{
+  font-family:'JetBrains Mono',monospace; font-size:.75rem;
+  background:var(--tag-bg); padding:1px 5px; border-radius:3px;
+}
+.md-viewer pre{
+  background:var(--code-bg); border:1px solid var(--code-border);
+  border-radius:4px; padding:1rem; overflow-x:auto; margin:1rem 0;
+}
+.md-viewer pre code{background:none; padding:0; color:#c0d0dc;}
+.md-viewer ul,.md-viewer ol{padding-left:1.5rem; margin:.5rem 0;}
+.md-viewer blockquote{
+  border-left:3px solid var(--acc); margin:.8rem 0;
+  padding:.4rem 1rem; color:var(--sub);
+}
+.md-viewer table{border-collapse:collapse; width:100%; margin:1rem 0;}
+.md-viewer th,.md-viewer td{
+  border:1px solid var(--border); padding:.4rem .8rem;
+  font-family:'JetBrains Mono',monospace; font-size:.72rem;
+}
+.md-viewer th{background:var(--tag-bg); color:var(--acc);}
+
 /* ── Scrollbar ── */
-.report-list::-webkit-scrollbar{width:4px;}
-.report-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.report-list::-webkit-scrollbar,.data-list::-webkit-scrollbar,.md-viewer::-webkit-scrollbar{width:4px;}
+.report-list::-webkit-scrollbar-thumb,.data-list::-webkit-scrollbar-thumb,.md-viewer::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 
 /* ── Empty state ── */
 .empty-state{
@@ -169,8 +237,14 @@ body{
       </div>
     </div>
 
-    <!-- Controls -->
-    <div class="controls">
+    <!-- Tab nav -->
+    <div class="tab-nav">
+      <button class="tab-btn active" id="tabReports" onclick="switchTab('reports')">Reports</button>
+      <button class="tab-btn" id="tabData" onclick="switchTab('data')">Data</button>
+    </div>
+
+    <!-- Controls (reports only) -->
+    <div class="controls" id="reportControls">
       <input type="text" class="search-box" id="searchBox" placeholder="Search by title…" autocomplete="off">
       <div class="filter-row">
         <select class="cat-select" id="catSelect">
@@ -183,6 +257,9 @@ body{
 
     <!-- Report list -->
     <div class="report-list" id="reportList"></div>
+
+    <!-- Data list -->
+    <div class="data-list" id="dataList"></div>
 
     <!-- Theme toggle + footer -->
     <div class="side-footer">
@@ -206,6 +283,7 @@ body{
       Select a report from the list to view it here.
     </div>
     <iframe class="viewer-frame" id="viewerFrame" style="display:none;"></iframe>
+    <div class="md-viewer" id="mdViewer"></div>
   </div>
 
 </div>
@@ -214,21 +292,25 @@ body{
 (function(){
   /* ── State ── */
   let reports = [];
-  let sortDesc = true;   // true = newest first
+  let sortDesc = true;
   let activeFile = null;
+  let currentTab = 'reports';
 
   /* ── DOM refs ── */
-  const searchBox      = document.getElementById('searchBox');
-  const catSelect      = document.getElementById('catSelect');
-  const sortBtn        = document.getElementById('sortBtn');
-  const reportList     = document.getElementById('reportList');
-  const resultCount    = document.getElementById('resultCount');
-  const viewerToolbar  = document.getElementById('viewerToolbar');
-  const viewerTitle    = document.getElementById('viewerTitle');
-  const viewerFrame    = document.getElementById('viewerFrame');
+  const searchBox         = document.getElementById('searchBox');
+  const catSelect         = document.getElementById('catSelect');
+  const sortBtn           = document.getElementById('sortBtn');
+  const reportList        = document.getElementById('reportList');
+  const dataList          = document.getElementById('dataList');
+  const reportControls    = document.getElementById('reportControls');
+  const resultCount       = document.getElementById('resultCount');
+  const viewerToolbar     = document.getElementById('viewerToolbar');
+  const viewerTitle       = document.getElementById('viewerTitle');
+  const viewerFrame       = document.getElementById('viewerFrame');
   const viewerPlaceholder = document.getElementById('viewerPlaceholder');
-  const btnNewTab      = document.getElementById('btnNewTab');
-  const btnDownload    = document.getElementById('btnDownload');
+  const mdViewer          = document.getElementById('mdViewer');
+  const btnNewTab         = document.getElementById('btnNewTab');
+  const btnDownload       = document.getElementById('btnDownload');
 
   /* ── Theme toggle ── */
   window.toggleTheme = function(){
@@ -237,7 +319,6 @@ body{
     document.getElementById('tsw').classList.toggle('on', dark);
     localStorage.setItem('hub-theme', dark ? 'gunmetal' : 'navy');
   };
-  // Restore saved theme
   (function(){
     const saved = localStorage.getItem('hub-theme');
     if(saved === 'gunmetal'){
@@ -247,7 +328,18 @@ body{
     }
   })();
 
-  /* ── Load manifest ── */
+  /* ── Tab switching ── */
+  window.switchTab = function(tab){
+    currentTab = tab;
+    document.getElementById('tabReports').classList.toggle('active', tab === 'reports');
+    document.getElementById('tabData').classList.toggle('active', tab === 'data');
+    reportControls.style.display = tab === 'reports' ? '' : 'none';
+    reportList.style.display     = tab === 'reports' ? '' : 'none';
+    dataList.style.display       = tab === 'data'    ? '' : 'none';
+    closeViewer();
+  };
+
+  /* ── Load reports manifest ── */
   fetch('reports.json')
     .then(r => r.json())
     .then(data => {
@@ -255,9 +347,16 @@ body{
       buildCategoryFilter();
       renderList();
     })
-    .catch(err => {
+    .catch(() => {
       reportList.innerHTML = '<div class="empty-state">Failed to load reports.json</div>';
-      console.error(err);
+    });
+
+  /* ── Load data manifest ── */
+  fetch('data.json')
+    .then(r => r.json())
+    .then(files => renderDataList(files))
+    .catch(() => {
+      dataList.innerHTML = '<div class="empty-state">No data files found.<br>Add .md files to data/ and push.</div>';
     });
 
   /* ── Build category dropdown ── */
@@ -265,8 +364,7 @@ body{
     const cats = [...new Set(reports.map(r => r.category).filter(Boolean))].sort();
     cats.forEach(c => {
       const opt = document.createElement('option');
-      opt.value = c;
-      opt.textContent = c;
+      opt.value = c; opt.textContent = c;
       catSelect.appendChild(opt);
     });
   }
@@ -280,10 +378,8 @@ body{
       if(q && !r.title.toLowerCase().includes(q)) return false;
       return true;
     });
-    // Sort
     list.sort((a,b) => {
-      const da = a.date || '';
-      const db = b.date || '';
+      const da = a.date || '', db = b.date || '';
       if(da < db) return sortDesc ? 1 : -1;
       if(da > db) return sortDesc ? -1 : 1;
       return a.title.localeCompare(b.title);
@@ -291,7 +387,7 @@ body{
     return list;
   }
 
-  /* ── Render list ── */
+  /* ── Render report list ── */
   function renderList(){
     const list = getFiltered();
     resultCount.textContent = list.length + ' report' + (list.length !== 1 ? 's' : '');
@@ -314,10 +410,27 @@ body{
     });
   }
 
+  /* ── Render data list ── */
+  function renderDataList(files){
+    if(!files || files.length === 0){
+      dataList.innerHTML = '<div class="empty-state">No data files yet.</div>';
+      return;
+    }
+    dataList.innerHTML = '';
+    files.forEach(f => {
+      const el = document.createElement('div');
+      el.className = 'data-item';
+      el.innerHTML = '<span class="data-item-title">' + escHtml(f.title || f.file) + '</span>';
+      el.addEventListener('click', () => openMarkdown(f, el));
+      dataList.appendChild(el);
+    });
+  }
+
   /* ── Open report in iframe ── */
   function openReport(r){
     activeFile = r.file;
     const url = 'reports/' + r.file;
+    mdViewer.style.display = 'none';
     viewerFrame.src = url;
     viewerFrame.style.display = 'block';
     viewerPlaceholder.style.display = 'none';
@@ -326,15 +439,31 @@ body{
     btnNewTab.href = url;
     btnDownload.href = url;
     btnDownload.download = r.file;
-    // highlight
     document.querySelectorAll('.report-item').forEach(el => el.classList.remove('active'));
-    // find and highlight
-    const items = reportList.querySelectorAll('.report-item');
-    items.forEach(el => {
-      if(el.querySelector('.report-item-title').textContent === r.title){
+    reportList.querySelectorAll('.report-item').forEach(el => {
+      if(el.querySelector('.report-item-title').textContent === r.title)
         el.classList.add('active');
-      }
     });
+  }
+
+  /* ── Open markdown file ── */
+  function openMarkdown(f, itemEl){
+    document.querySelectorAll('.data-item').forEach(el => el.classList.remove('active'));
+    itemEl.classList.add('active');
+    viewerFrame.style.display = 'none';
+    viewerFrame.src = 'about:blank';
+    viewerPlaceholder.style.display = 'none';
+    viewerToolbar.style.display = 'flex';
+    viewerTitle.textContent = f.title || f.file;
+    btnNewTab.href = 'data/' + f.file;
+    btnDownload.href = 'data/' + f.file;
+    btnDownload.download = f.file;
+    mdViewer.style.display = 'block';
+    mdViewer.innerHTML = '<div class="empty-state">Loading…</div>';
+    fetch('data/' + f.file)
+      .then(r => r.text())
+      .then(md => { mdViewer.innerHTML = marked.parse(md); })
+      .catch(() => { mdViewer.innerHTML = '<div class="empty-state">Failed to load file.</div>'; });
   }
 
   /* ── Close viewer ── */
@@ -342,9 +471,11 @@ body{
     activeFile = null;
     viewerFrame.src = 'about:blank';
     viewerFrame.style.display = 'none';
+    mdViewer.style.display = 'none';
+    mdViewer.innerHTML = '';
     viewerPlaceholder.style.display = 'flex';
     viewerToolbar.style.display = 'none';
-    document.querySelectorAll('.report-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.report-item,.data-item').forEach(el => el.classList.remove('active'));
   };
 
   /* ── Sort toggle ── */
@@ -355,7 +486,6 @@ body{
     renderList();
   });
 
-  /* ── Search & filter ── */
   searchBox.addEventListener('input', renderList);
   catSelect.addEventListener('change', renderList);
 
@@ -364,14 +494,12 @@ body{
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
   function formatDate(d){
-    // d = "2026-04-03T20:39" → "03 Apr 2026, 20:39"
     if(!d) return '';
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const parts = d.split('T');
     if(parts.length < 2) return d;
     const [y,m,day] = parts[0].split('-');
-    const mi = parseInt(m,10) - 1;
-    return day + ' ' + (months[mi]||m) + ' ' + y + ', ' + parts[1];
+    return day + ' ' + (months[parseInt(m,10)-1]||m) + ' ' + y + ', ' + parts[1];
   }
 })();
 </script>

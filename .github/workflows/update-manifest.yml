@@ -1,12 +1,13 @@
-name: Update reports.json
+name: Update manifests
 
 on:
   push:
     paths:
       - "reports/**.html"
+      - "data/**.md"
 
 jobs:
-  update-manifest:
+  update-manifests:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -15,12 +16,17 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Rebuild reports.json
+        if: contains(toJson(github.event.commits.*.added + github.event.commits.*.modified), 'reports/')
         run: python3 build_manifest.py
 
-      - name: Commit updated manifest
+      - name: Rebuild data.json
+        if: contains(toJson(github.event.commits.*.added + github.event.commits.*.modified), 'data/')
+        run: python3 build_data_manifest.py
+
+      - name: Commit updated manifests
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add reports.json
-          git diff --cached --quiet || git commit -m "chore: auto-update reports.json"
+          git add reports.json data.json
+          git diff --cached --quiet || git commit -m "chore: auto-update manifests"
           git push

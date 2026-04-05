@@ -759,7 +759,7 @@ body {
   /* ── Open report ── */
   function openReport(r){
     activeFile = r.file;
-    const url = 'reports/' + r.file;
+    const url = '../reports/' + r.file;
     mdViewer.style.display = 'none';
     viewerFrame.src = url;
     viewerFrame.style.display = 'block';
@@ -784,11 +784,11 @@ body {
     viewerPlaceholder.style.display = 'none';
     viewerToolbar.style.display = 'flex';
     viewerTitle.textContent = f.title || f.file;
-    btnNewTab.href = 'data/' + f.file;
-    btnDownload.href = 'data/' + f.file; btnDownload.download = f.file.split('/').pop();
+    btnNewTab.href = '../data/' + f.file;
+    btnDownload.href = '../data/' + f.file; btnDownload.download = f.file.split('/').pop();
     mdViewer.style.display = 'block';
     mdViewer.innerHTML = '<div class="empty-state">Loading…</div>';
-    fetch('data/' + f.file)
+    fetch('../data/' + f.file)
       .then(r => { if (!r.ok) throw r; return r.text(); })
       .then(md => { mdViewer.innerHTML = marked.parse(md); mdViewer.scrollTop = 0; })
       .catch(() => { mdViewer.innerHTML = '<div class="empty-state">Failed to load file.</div>'; });

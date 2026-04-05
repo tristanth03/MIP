@@ -22,15 +22,10 @@ jobs:
           python3 build_manifest.py
           python3 build_data_manifest.py
 
-      - name: Copy manifests to docs for GitHub Pages
-        run: |
-          cp reports.json docs/reports.json
-          cp data.json docs/data.json
-
       - name: Commit updated manifests
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add reports.json data.json docs/reports.json docs/data.json
+          git add reports.json data.json
           git diff --cached --quiet || git commit -m "chore: auto-update manifests"
           git push

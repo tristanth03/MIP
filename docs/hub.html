@@ -525,7 +525,7 @@ body {
   };
 
   /* ── Load reports ── */
-  fetch('../reports.json')
+  fetch('reports.json')
     .then(r => { if (!r.ok) throw r; return r.json(); })
     .then(data => {
       reports = data;
@@ -537,7 +537,7 @@ body {
     });
 
   /* ── Load data ── */
-  fetch('../data.json')
+  fetch('data.json')
     .then(r => { if (!r.ok) throw r; return r.json(); })
     .then(files => {
       dataFiles = files;

@@ -532,7 +532,8 @@ body {
       buildCatFilter();
       renderReports();
     })
-    .catch(() => {
+    .catch(e => {
+      console.error('Failed to load reports.json:', e);
       reportList.innerHTML = '<div class="empty-state">Could not load reports.json</div>';
     });
 
@@ -544,7 +545,8 @@ body {
       buildDataFilters();
       renderDataList();
     })
-    .catch(() => {
+    .catch(e => {
+      console.error('Failed to load data.json:', e);
       dataList.innerHTML = '<div class="empty-state">No data files found.<br>Commit .md files to data/</div>';
     });
 

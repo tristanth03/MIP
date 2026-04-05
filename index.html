@@ -12,10 +12,9 @@
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,serif;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s;}
 body{display:flex;align-items:center;justify-content:center;min-height:100vh;}
 .landing{display:flex;flex-direction:column;align-items:center;gap:2.8rem;padding:2rem;}
-.logo-wrap{width:280px;max-width:80vw;}
-.logo-wrap svg, .logo-wrap img{width:100%;height:auto;display:block;}
-.navy .logo-dark{display:none;}
-.gunmetal .logo-light{display:none;}
+.brand-section{text-align:center;margin-bottom:1.5rem;}
+.brand-label{font-family:'JetBrains Mono',monospace;font-size:0.85rem;letter-spacing:.18em;text-transform:uppercase;color:var(--acc);margin-bottom:.5rem;}
+.brand-title{font-size:3.5rem;font-weight:500;color:var(--text);font-family:'EB Garamond',Georgia,serif;line-height:1.1;}
 .btn-row{display:flex;gap:1.2rem;flex-wrap:wrap;justify-content:center;}
 .btn-big{font-family:'JetBrains Mono',monospace;font-size:1.01rem;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);background:none;border:1px solid var(--acc);border-radius:4px;padding:10px 36px;cursor:pointer;text-decoration:none;transition:background .15s,color .15s;white-space:nowrap;}
 .btn-big:hover{background:var(--acc);color:#fff;}
@@ -27,11 +26,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;}
 </head>
 <body>
 <main class="landing">
-  <div class="logo-wrap logo-light">
-    <img src="logo-light.png" alt="MIP Logo">
-  </div>
-  <div class="logo-wrap logo-dark">
-    <img src="logo-dark.png" alt="MIP Logo">
+  <div class="brand-section">
+    <div class="brand-label">Market Intelligence Platform</div>
+    <div class="brand-title">MIP</div>
   </div>
   <div class="btn-row">
     <a class="btn-big" href="hub.html">Reports</a>

@@ -13,7 +13,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'EB Gar
 body{display:flex;align-items:center;justify-content:center;min-height:100vh;}
 .landing{display:flex;flex-direction:column;align-items:center;gap:2.8rem;padding:2rem;}
 .logo-wrap{width:280px;max-width:80vw;}
-.logo-wrap svg{width:100%;height:auto;display:block;}
+.logo-wrap svg, .logo-wrap img{width:100%;height:auto;display:block;}
 .navy .logo-dark{display:none;}
 .gunmetal .logo-light{display:none;}
 .btn-row{display:flex;gap:1.2rem;flex-wrap:wrap;justify-content:center;}
@@ -28,32 +28,10 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;}
 <body>
 <main class="landing">
   <div class="logo-wrap logo-light">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 265" fill="none">
-      <path d="M 72 24 L 196 18" stroke="#0E6090" stroke-width="2.2" stroke-linecap="round"/>
-      <path d="M 196 18 Q 318 12 322 95 Q 325 162 268 176" stroke="#0E6090" stroke-width="2.2" stroke-linecap="round"/>
-      <circle cx="72" cy="24" r="6.5" fill="#0E6090"/>
-      <circle cx="196" cy="18" r="6.5" fill="#0E6090"/>
-      <circle cx="268" cy="176" r="6.5" fill="#0E6090"/>
-      <text x="14" y="172" font-family="Georgia,'Times New Roman',serif" font-size="152" fill="#060F22">M</text>
-      <text x="172" y="172" font-family="Georgia,'Times New Roman',serif" font-size="152" fill="#0E6090">I</text>
-      <text x="204" y="172" font-family="Georgia,'Times New Roman',serif" font-size="152" fill="#060F22">P</text>
-      <text x="190" y="212" font-family="Georgia,'Times New Roman',serif" font-size="13.5" text-anchor="middle" letter-spacing="3" fill="#3a5060">MARKET INTELLIGENCE</text>
-      <text x="190" y="233" font-family="Georgia,'Times New Roman',serif" font-size="13.5" text-anchor="middle" letter-spacing="3" fill="#A8B8C8">PLATFORM</text>
-    </svg>
+    <img src="../logo-light.png" alt="MIP Logo">
   </div>
   <div class="logo-wrap logo-dark">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 265" fill="none">
-      <path d="M 72 24 L 196 18" stroke="#38B8E0" stroke-width="2.2" stroke-linecap="round"/>
-      <path d="M 196 18 Q 318 12 322 95 Q 325 162 268 176" stroke="#38B8E0" stroke-width="2.2" stroke-linecap="round"/>
-      <circle cx="72" cy="24" r="6.5" fill="#38B8E0"/>
-      <circle cx="196" cy="18" r="6.5" fill="#38B8E0"/>
-      <circle cx="268" cy="176" r="6.5" fill="#38B8E0"/>
-      <text x="14" y="172" font-family="Georgia,'Times New Roman',serif" font-size="152" fill="#C0D0DC">M</text>
-      <text x="172" y="172" font-family="Georgia,'Times New Roman',serif" font-size="152" fill="#38B8E0">I</text>
-      <text x="204" y="172" font-family="Georgia,'Times New Roman',serif" font-size="152" fill="#C0D0DC">P</text>
-      <text x="190" y="212" font-family="Georgia,'Times New Roman',serif" font-size="13.5" text-anchor="middle" letter-spacing="3" fill="#7090a8">MARKET INTELLIGENCE</text>
-      <text x="190" y="233" font-family="Georgia,'Times New Roman',serif" font-size="13.5" text-anchor="middle" letter-spacing="3" fill="#506878">PLATFORM</text>
-    </svg>
+    <img src="../logo-dark.png" alt="MIP Logo">
   </div>
   <div class="btn-row">
     <a class="btn-big" href="hub.html">Reports</a>

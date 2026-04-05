@@ -23,11 +23,13 @@
   },
   {
     "file": "api/Iceland/testCase.md",
-    "title": "Testcase",
+    "title": "Population projection by age and sex 2026-2075",
     "country": "Iceland",
-    "sector": "",
-    "source": "",
-    "type": "",
-    "tags": []
+    "sector": "Economics",
+    "source": "Hagstofa / Statistics Iceland",
+    "type": "Population",
+    "tags": [
+      "Population projection"
+    ]
   }
 ]
